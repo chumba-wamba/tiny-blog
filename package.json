@@ -1,0 +1,30 @@
+{
+  "name": "tiny-blog",
+  "version": "1.0.0",
+  "description": "A minimal, text-based web-application which allows you to create, read, update, and delete blogs. The intetion behind developing this project is to learn how to use Node.js and various other node libraries/frameworks such as Express.js, Handlebars, Mongoose, OAuth2 (with Passport), etc. The back-end relies on routers created using Express.js and the front-end is powered by HTML, CSS, and Vanilla JS with the Handlebars as the templating engine. The future scope of the project is to replace the front-end with React.js or any other subsequent framework/library for better state management.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cross-env NODE_ENV=production node app",
+    "dev": "cross-env NODE_ENV=development nodemon app"
+  },
+  "author": "chumba-wamba",
+  "license": "MIT",
+  "dependencies": {
+    "connect-mongo": "^3.2.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^5.1.0",
+    "express-session": "^1.17.1",
+    "method-override": "^3.0.0",
+    "moment": "^2.29.1",
+    "mongoose": "^5.10.9",
+    "morgan": "^1.10.0",
+    "passport": "^0.4.1",
+    "passport-google-oauth2": "^0.2.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.2",
+    "nodemon": "^2.0.4"
+  }
+}
