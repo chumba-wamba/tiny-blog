@@ -19,8 +19,9 @@ dotenv.config({ path: "./config/config.env" });
 const PORT = process.env.PORT || 5000;
 const NODE_ENV = process.env.NODE_ENV;
 
-// require google strategy
-require("./config/passport")(passport);
+// adding oauth strategies
+require("./config/google_passport")(passport);
+require("./config/github_passport")(passport);
 
 // connection to the database using config
 connectDB();

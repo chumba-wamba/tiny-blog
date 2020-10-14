@@ -20,4 +20,17 @@ router.get(
   )
 );
 
+router.get("/github", passport.authenticate("github"));
+
+router.get(
+  "/github/callback",
+  passport.authenticate(
+    "github",
+    {
+      failureRedirect: "/",
+    },
+    (req, res) => res.redirect("/dashboard")
+  )
+);
+
 module.exports = router;
