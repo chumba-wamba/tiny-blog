@@ -1,9 +1,13 @@
 const path = require("path");
 const express = require("express");
-const dotenv = require("dotenv");
-const morgan = require("morgan");
 const exphbs = require("express-handlebars");
-const connectDB = require("./config/database");
+const session = require("express-session");
+const mongoose = require("mongoose");
+const moment = require("moment");
+const morgan = require("morgan");
+const dotenv = require("dotenv");
+const passport = require("passport");
+const connectDB = require("./config/database"); // config for database connection
 
 // loading configuration file from path
 // "./config/config.env" to access environment
@@ -12,33 +16,53 @@ const connectDB = require("./config/database");
 // including but not limited to segregating between
 // production and development environments
 dotenv.config({ path: "./config/config.env" });
-const PORT = process.env.PORT || 8080; // loading PORT from .env
+const PORT = process.env.PORT || 5000;
+const NODE_ENV = process.env.NODE_ENV;
 
-const app = express(); // initialising express app
-connectDB(); // connection to mongodb database (refer "./config/databse.js")
+// require google strategy
+require("./config/passport")(passport);
 
-// adding morgan as a middleware for logging if
-// the server is being run in the develpment
-// environment
-if (process.env.NODE_ENV === "development") {
-  console.log("Using morgan middleware for logging");
+// connection to the database using config
+connectDB();
+
+// initialising an express app
+app = express();
+
+// adding morgan middleware for loggin
+if (NODE_ENV === "development") {
   app.use(morgan("dev"));
+  console.log("Using morgan middleware (dev) for logging");
 }
 
-// handlebars for templating
-app.engine(".hbs", exphbs({ defaultLayout: "main", extname: ".hbs" }));
+// initialising express-handlebars for templating
+app.engine(".hbs", exphbs({ defaultLayout: "main.hbs", extname: ".hbs" }));
 app.set("view engine", ".hbs");
 
-// adding the static folder
+// adding public directory for assets
 app.use(express.static(path.join(__dirname, "public")));
 
-// adding routes
-app.use("/", require("./routes/index"));
+// adding middleware for session
+app.use(
+  session({
+    secret: "keyboard cat",
+    resave: false,
+    saveUninitialized: false,
+    // store: new MongoStore({ mongooseConnection: mongoose.connection }),
+  })
+);
 
-// initialising express app to listen to any
-// incoming requests.
+// adding middleware for passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+// adding routes for "/..." endpoints
+app.use("/", require("./routes/index.js"));
+
+// adding routes for "/auth/..." endpoints
+app.use("/auth", require("./routes/auth.js"));
+
+// initialising express app to listen to
+// any incoming requests
 app.listen(PORT, (req, res) => {
-  console.log(
-    `Server running in ${process.env.NODE_ENV} environment; started at port ${PORT}`
-  );
+  console.log(`Server running in ${NODE_ENV} at port: ${PORT}`);
 });

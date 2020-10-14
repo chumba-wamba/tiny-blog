@@ -2,14 +2,13 @@ const mongoose = require("mongoose");
 
 const connectDB = async () => {
   try {
-    const connection = await mongoose.connect(process.env.DATABASE_URI, {
+    connection = await mongoose.connect(process.env.DATABASE_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      useFindAndModify: false,
     });
-    console.log(`Database initalised! host: ${connection.connection.host}`);
-  } catch (err) {
-    console.log(err);
+    console.log(`Connected with database at ${connection.connection.host}`);
+  } catch (error) {
+    console.log(error);
     process.exit(1);
   }
 };
