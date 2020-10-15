@@ -7,6 +7,7 @@ const moment = require("moment");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
 const passport = require("passport");
+const MongoStore = require("connect-mongo")(session);
 const connectDB = require("./config/database"); // config for database connection
 
 // loading configuration file from path
@@ -29,7 +30,7 @@ connectDB();
 // initialising an express app
 app = express();
 
-// adding morgan middleware for loggin
+// adding morgan middleware for logging
 if (NODE_ENV === "development") {
   app.use(morgan("dev"));
   console.log("Using morgan middleware (dev) for logging");
@@ -39,22 +40,22 @@ if (NODE_ENV === "development") {
 app.engine(".hbs", exphbs({ defaultLayout: "main.hbs", extname: ".hbs" }));
 app.set("view engine", ".hbs");
 
-// adding public directory for assets
-app.use(express.static(path.join(__dirname, "public")));
-
 // adding middleware for session
 app.use(
   session({
     secret: "keyboard cat",
     resave: false,
     saveUninitialized: false,
-    // store: new MongoStore({ mongooseConnection: mongoose.connection }),
+    store: new MongoStore({ mongooseConnection: mongoose.connection }),
   })
 );
 
 // adding middleware for passport
 app.use(passport.initialize());
 app.use(passport.session());
+
+// adding public directory for assets
+app.use(express.static(path.join(__dirname, "public")));
 
 // adding routes for "/..." endpoints
 app.use("/", require("./routes/index.js"));
