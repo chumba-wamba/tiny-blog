@@ -30,14 +30,34 @@ connectDB();
 // initialising an express app
 app = express();
 
+// adding body parser middleware
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
 // adding morgan middleware for logging
 if (NODE_ENV === "development") {
   app.use(morgan("dev"));
   console.log("Using morgan middleware (dev) for logging");
 }
 
+// helpers for handlebars
+const {
+  formatDate,
+  stripTags,
+  truncate,
+  editIcon,
+  select,
+} = require("./helpers/hbs");
+
 // initialising express-handlebars for templating
-app.engine(".hbs", exphbs({ defaultLayout: "main.hbs", extname: ".hbs" }));
+app.engine(
+  ".hbs",
+  exphbs({
+    helpers: { formatDate, stripTags, truncate, editIcon, select },
+    defaultLayout: "main.hbs",
+    extname: ".hbs",
+  })
+);
 app.set("view engine", ".hbs");
 
 // adding middleware for session
@@ -54,6 +74,12 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
+// adding middleware to make "user" global
+app.use((req, res, next) => {
+  res.locals.user = req.user || null;
+  return next();
+});
+
 // adding public directory for assets
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -62,6 +88,9 @@ app.use("/", require("./routes/index.js"));
 
 // adding routes for "/auth/..." endpoints
 app.use("/auth", require("./routes/auth.js"));
+
+// adding routes for "/stories/..." endpoints
+app.use("/stories", require("./routes/stories.js"));
 
 // initialising express app to listen to
 // any incoming requests
