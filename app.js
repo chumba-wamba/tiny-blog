@@ -5,6 +5,8 @@ const session = require("express-session");
 const mongoose = require("mongoose");
 const moment = require("moment");
 const morgan = require("morgan");
+const methodOverride = require("method-override");
+// var bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const passport = require("passport");
 const MongoStore = require("connect-mongo")(session);
@@ -79,6 +81,19 @@ app.use((req, res, next) => {
   res.locals.user = req.user || null;
   return next();
 });
+
+// adding middleware for method-override
+// app.use(bodyParser.urlencoded());
+app.use(
+  methodOverride(function (req, res) {
+    if (req.body && typeof req.body === "object" && "_method" in req.body) {
+      // look in urlencoded POST bodies and delete it
+      var method = req.body._method;
+      delete req.body._method;
+      return method;
+    }
+  })
+);
 
 // adding public directory for assets
 app.use(express.static(path.join(__dirname, "public")));

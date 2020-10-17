@@ -13,7 +13,9 @@ router.get("/dashboard", ensureAuth, async (req, res) => {
     // console.log(stories);
     res.render("dashboard.hbs", {
       layout: "main.hbs",
-      name: req.user.firstName,
+      name:
+        req.user.firstName.charAt(0).toUpperCase() +
+        req.user.firstName.slice(1).toLowerCase(),
       stories,
     });
   } catch (error) {
